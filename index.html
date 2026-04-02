@@ -45,9 +45,8 @@ border-radius:8px;
 
 <body>
 
-<div class="header" id="title">JSDH Havířov</div>
+<div class="header">JSDH Havířov</div>
 
-<!-- HOME -->
 <div id="home">
 <div id="infoBox" class="card" style="margin:15px;"></div>
 
@@ -59,33 +58,22 @@ border-radius:8px;
 </div>
 </div>
 
-<!-- VOZIDLA -->
 <div id="vozidla" style="display:none;">
 <div class="back" onclick="goHome()">⬅ Zpět</div>
-
 <div class="card" onclick="openCAS()">CAS 20/4000/250 S2R - HKA 701</div>
 <div class="card" onclick="openDA()">DA 12 Renault - HKA 700</div>
-<div class="card">VEA Škoda Yeti - HKA 702</div>
 </div>
 
-<!-- SLUŽBY -->
 <div id="sluzby" style="display:none;">
 <div class="back" onclick="goHome()">⬅ Zpět</div>
-
-<iframe 
-src="https://docs.google.com/spreadsheets/d/1YkziVkwffJxgKvp6J7__u2TVs_T3QOcyAS_QdTm_OFs/preview"
-style="width:100%; height:90vh; border:none;">
-</iframe>
-
+<iframe src="https://docs.google.com/spreadsheets/d/1YkziVkwffJxgKvp6J7__u2TVs_T3QOcyAS_QdTm_OFs/preview" style="width:100%; height:90vh;"></iframe>
 </div>
 
-<!-- MAPA -->
 <div id="mapa" style="display:none;">
 <div class="back" onclick="goHome()">⬅ Zpět</div>
-<iframe src="https://www.google.com/maps/d/embed?mid=12aDzLFcwAqOVW47bT8uIo2bEsoE" style="width:100%; height:90vh; border:none;"></iframe>
+<iframe src="https://www.google.com/maps/d/embed?mid=12aDzLFcwAqOVW47bT8uIo2bEsoE" style="width:100%; height:90vh;"></iframe>
 </div>
 
-<!-- DETAIL -->
 <div id="detail" style="display:none;">
 <div class="back" onclick="showPage('vozidla')">⬅ Zpět</div>
 <input class="search" placeholder="🔍 Hledat..." oninput="searchText(this.value)">
@@ -94,14 +82,12 @@ style="width:100%; height:90vh; border:none;">
 
 <script>
 
-// SERVICE WORKER
+// service worker update
 if ('serviceWorker' in navigator) {
-navigator.serviceWorker.register('service-worker.js').then(reg => {
-reg.update();
-});
+navigator.serviceWorker.register('service-worker.js').then(reg=>reg.update());
 }
 
-// NAVIGACE
+// navigace
 function showPage(p){
 home.style.display="none";
 vozidla.style.display="none";
@@ -112,131 +98,101 @@ document.getElementById(p).style.display="block";
 }
 function goHome(){ showPage("home"); }
 
-// ČAS + SMĚNY
+// čas + směna
 function updateInfo(){
 let now=new Date();
-let time=now.toLocaleTimeString("cs-CZ");
-let date=now.toLocaleDateString("cs-CZ");
-
 let start=new Date(2024,0,1);
 let diff=Math.floor((now-start)/(1000*60*60*24));
 let smena=["A","B","C"][diff%3];
 
 infoBox.innerHTML=`
-<div style="font-size:18px;font-weight:bold;">${time}</div>
-<div>${date}</div>
+<div><b>${now.toLocaleTimeString("cs-CZ")}</b></div>
+<div>${now.toLocaleDateString("cs-CZ")}</div>
 <hr>
-<div style="font-size:20px;">🚒 Směna ${smena}</div>
+<div>🚒 Směna ${smena}</div>
 `;
 }
 setInterval(updateInfo,1000);
 updateInfo();
 
-// Hasičům CZ – rozpoznání systému
+// hasicum
 function openHasicum(){
-
-let ua = navigator.userAgent || navigator.vendor || window.opera;
-
-if (/android/i.test(ua)) {
+let ua=navigator.userAgent;
+if(/android/i.test(ua)){
 window.location.href="https://play.google.com/store/apps/details?id=cz.hasicum.app";
-}
-else if (/iPad|iPhone|iPod/.test(ua)) {
+}else{
 window.location.href="https://apps.apple.com/";
 }
-else {
-window.location.href="https://play.google.com/store/apps/details?id=cz.hasicum.app";
 }
 
-}
-
-// RENDER
+// render
 function render(data,isCAS){
 let html="";
 
 if(isCAS){
-html+=`
-<div class="quick">
-<div>💧 4000 L vody</div>
-<div>🧯 250 L pěnidlo</div>
-<div>⚡ 324 kW</div>
-<div>🚛 SCANIA</div>
-<div>📅 2021</div>
-<div>🏎️ 110 km/h</div>
-</div>`;
+html+=`<div class="quick"><div>4000L</div><div>324kW</div><div>SCANIA</div><div>110km/h</div></div>`;
 }else{
-html+=`
-<div class="quick">
-<div>⚡ 100 kW</div>
-<div>🔧 3.0 dCi</div>
-<div>💪 320 Nm</div>
-<div>🚛 3500 kg</div>
-<div>📦 1460 kg</div>
-<div>📏 L2 H2</div>
-</div>`;
+html+=`<div class="quick"><div>100kW</div><div>3.0 dCi</div><div>3500kg</div><div>1460kg</div></div>`;
 }
 
 data.forEach((s,i)=>{
-html+=`
-<div class="section">
+html+=`<div class="section">
 <div class="section-header" onclick="toggle(${i})">${s.nazev}</div>
 <div class="section-content" id="sec${i}">
 ${s.veci.map(v=>`<div class="item">${v}</div>`).join("")}
-</div>
-</div>`;
+</div></div>`;
 });
 
 content.innerHTML=html;
 }
 
-// OTEVŘENÍ
-function openCAS(){
-showPage("detail");
-render(sekceCAS,true);
-}
+// otevření
+function openCAS(){ showPage("detail"); render(sekceCAS,true); }
+function openDA(){ showPage("detail"); render(sekceDA,false); }
 
-function openDA(){
-showPage("detail");
-render(sekceDA,false);
-}
-
-// TOGGLE
+// toggle
 function toggle(i){
 let el=document.getElementById("sec"+i);
 el.style.display=el.style.display==="block"?"none":"block";
 }
 
-// SEARCH
+// search
 function searchText(text){
 text=text.toLowerCase();
-
 document.querySelectorAll(".item").forEach(el=>{
-let original = el.innerText;
-let lower = original.toLowerCase();
-
-if(lower.includes(text) && text !== ""){
+let t=el.innerText;
+if(t.toLowerCase().includes(text)){
 el.style.display="block";
-let regex = new RegExp(`(${text})`, "gi");
-el.innerHTML = original.replace(regex, `<span class="highlight">$1</span>`);
+el.innerHTML=t.replace(new RegExp(text,"gi"),m=>`<span class="highlight">${m}</span>`);
 el.closest(".section-content").style.display="block";
-}else if(text===""){
-el.style.display="block";
-el.innerHTML=original;
 }else{
 el.style.display="none";
-el.innerHTML=original;
 }
 });
 }
 
-// ===== CAS =====
+// ===== CAS KOMPLETNÍ =====
 const sekceCAS = [
-{nazev:"Prostor řidiče a velitele", veci:["Držák tablet","RDST Motorola","Termokamera"]},
-{nazev:"Střecha", veci:["Žebřík","Savice","Stan"]}
+{nazev:"Prostor řidiče a velitele", veci:["Držák tablet","RDST Motorola","Termokamera","Vesta HASIČI","Vesta VELITEL"]},
+{nazev:"Prostor před lavicí", veci:["Zdravotnický batoh","Termokamera","RDST","Svítilny"]},
+{nazev:"Levá přední", veci:["Elektrocentrála","Motorová pila","Rozbrušovačka"]},
+{nazev:"Pravá přední", veci:["Plovoucí čerpadlo","Zvedací vaky","Ventilátor"]},
+{nazev:"Levá prostřední", veci:["Hadice B,C,D","Rozdělovač","Proudnice"]},
+{nazev:"Pravá prostřední", veci:["Lezecké přepravky","Nosítka","Sorbční výbava"]},
+{nazev:"Levá zadní", veci:["Sekery","PHP","Hydrantové klíče"]},
+{nazev:"Pravá zadní", veci:["Lednice","Mikrovlnka"]},
+{nazev:"Střecha", veci:["Žebřík","Savice","Stan"]},
+{nazev:"Lezecké vybavení", veci:["Postroj","Karabiny","Blokant","Lékárnička"]},
+{nazev:"Parametry", veci:["SCANIA","2021","324kW","4000L","110km/h"]}
 ];
 
-// ===== DA =====
+// ===== DA KOMPLETNÍ =====
 const sekceDA = [
-{nazev:"Prostor řidiče", veci:["Ovladač vrat","RDST GM360"]},
+{nazev:"Prostor řidiče", veci:["Ovladač vrat","RDST GM360","Vesta"]},
+{nazev:"Pod sedadly", veci:["Zvedák","Klíč na kola"]},
+{nazev:"Nad řidičem", veci:["Deka","Nosítka","Plachta"]},
+{nazev:"Posádka", veci:["Lano","Pláštěnky"]},
+{nazev:"Úložný prostor", veci:["Lopata","Sekera","VRVN"]},
 {nazev:"Střecha", veci:["Žebřík"]}
 ];
 
