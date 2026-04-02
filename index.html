@@ -62,7 +62,7 @@ border-radius:8px;
 
 <!-- SLUŽBY -->
 <div id="sluzby" style="display:none;">
-<div class="back" onclick="goHome()">⬅ Zpět</div>
+<div class="card" onclick="openSluzby()">📅 Služby</div>
 <iframe src="https://docs.google.com/spreadsheets/d/1YkziVkwffJxgKvp6J7__u2TVs_T3QOcyAS_QdTm_OFs/edit?gid=2048370807#gid=2048370807" style="width:100%; height:90vh; border:none;"></iframe>
 </div>
 
@@ -80,7 +80,12 @@ border-radius:8px;
 </div>
 
 <script>
-
+function openSluzby(){
+window.open(
+"https://docs.google.com/spreadsheets/d/1YkziVkwffJxgKvp6J7__u2TVs_T3QOcyAS_QdTm_OFs/edit?gid=1742437687",
+"_blank"
+);
+}
 // NAVIGACE
 function showPage(p){
 home.style.display="none";
