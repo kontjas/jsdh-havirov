@@ -75,7 +75,7 @@ border-radius:8px;
 <!-- DETAIL -->
 <div id="detail" style="display:none;">
 <div class="back" onclick="showPage('vozidla')">⬅ Zpět</div>
-<input class="search" placeholder="🔍 Hledat..." onkeyup="searchText(this.value)">
+<input class="search" placeholder="🔍 Hledat..." oninput="searchText(this.value)">
 <div id="content"></div>
 </div>
 
@@ -191,11 +191,57 @@ el.style.display=el.style.display==="block"?"none":"block";
 }
 
 // SEARCH
+function normalizeText(text){
+return text
+.toLowerCase()
+.normalize("NFD")
+.replace(/[\u0300-\u036f]/g, "");
+}
+
 function searchText(text){
-text=text.toLowerCase();
-document.querySelectorAll(".item").forEach(el=>{
-el.style.display=el.innerText.toLowerCase().includes(text)?"block":"none";
+
+let search = normalizeText(text);
+
+document.querySelectorAll(".item").forEach(el => {
+
+// uloží původní text jen jednou
+if(!el.dataset.original){
+el.dataset.original = el.textContent;
+}
+
+let original = el.dataset.original;
+let normalized = normalizeText(original);
+
+if(search === ""){
+el.style.display = "block";
+el.textContent = original;
+return;
+}
+
+if(normalized.includes(search)){
+
+el.style.display = "block";
+
+// zvýraznění (bez rozbití iOS)
+let regex = new RegExp(`(${text})`, "gi");
+
+try{
+el.innerHTML = original.replace(regex, `<span style="background:yellow;font-weight:bold;">$1</span>`);
+}catch{
+el.textContent = original;
+}
+
+// otevře sekci
+let parent = el.closest(".section-content");
+if(parent) parent.style.display = "block";
+
+}else{
+el.style.display = "none";
+el.textContent = original;
+}
+
 });
+
 }
 
 // ===== CAS DATA =====
