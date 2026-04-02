@@ -186,30 +186,58 @@ render(sekceDA,false);
 
 // TOGGLE
 function searchText(text){
+function normalizeText(text){
+return text
+.toLowerCase()
+.normalize("NFD")
+.replace(/[\u0300-\u036f]/g, "");
+}
 
-text = text.toLowerCase();
+function searchText(text){
+
+let search = normalizeText(text);
 
 document.querySelectorAll(".item").forEach(el => {
 
-let original = el.getAttribute("data-original");
-
 // uloží původní text jen jednou
-if(!original){
-original = el.innerText;
-el.setAttribute("data-original", original);
+if(!el.dataset.original){
+el.dataset.original = el.textContent;
 }
 
-let lower = original.toLowerCase();
+let original = el.dataset.original;
+let normalized = normalizeText(original);
 
-if(text === ""){
+if(search === ""){
 el.style.display = "block";
-el.innerHTML = original;
+el.textContent = original;
 return;
 }
 
-if(lower.includes(text)){
+if(normalized.includes(search)){
 
 el.style.display = "block";
+
+// zvýraznění (bez rozbití iOS)
+let regex = new RegExp(`(${text})`, "gi");
+
+try{
+el.innerHTML = original.replace(regex, `<span style="background:yellow;font-weight:bold;">$1</span>`);
+}catch{
+el.textContent = original;
+}
+
+// otevře sekci
+let parent = el.closest(".section-content");
+if(parent) parent.style.display = "block";
+
+}else{
+el.style.display = "none";
+el.textContent = original;
+}
+
+});
+
+}
 
 // zvýraznění
 let regex = new RegExp(`(${text})`, "gi");
