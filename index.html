@@ -35,11 +35,7 @@ grid-template-columns:1fr 1fr;
 gap:10px;
 font-size:14px;
 }
-.quick div {
-background:#f7f7f7;
-padding:10px;
-border-radius:8px;
-}
+.quick div { background:#f7f7f7; padding:10px; border-radius:8px; }
 </style>
 </head>
 
@@ -47,6 +43,7 @@ border-radius:8px;
 
 <div class="header">JSDH Havířov</div>
 
+<!-- HOME -->
 <div id="home">
 <div id="infoBox" class="card" style="margin:15px;"></div>
 
@@ -58,22 +55,28 @@ border-radius:8px;
 </div>
 </div>
 
+<!-- VOZIDLA -->
 <div id="vozidla" style="display:none;">
 <div class="back" onclick="goHome()">⬅ Zpět</div>
+
 <div class="card" onclick="openCAS()">CAS 20/4000/250 S2R - HKA 701</div>
 <div class="card" onclick="openDA()">DA 12 Renault - HKA 700</div>
+<div class="card">VEA Škoda Yeti - HKA 702</div>
 </div>
 
+<!-- SLUŽBY -->
 <div id="sluzby" style="display:none;">
 <div class="back" onclick="goHome()">⬅ Zpět</div>
-<iframe src="https://docs.google.com/spreadsheets/d/1YkziVkwffJxgKvp6J7__u2TVs_T3QOcyAS_QdTm_OFs/preview" style="width:100%; height:90vh;"></iframe>
+<iframe src="https://docs.google.com/spreadsheets/d/1YkziVkwffJxgKvp6J7__u2TVs_T3QOcyAS_QdTm_OFs/preview" style="width:100%; height:90vh; border:none;"></iframe>
 </div>
 
+<!-- MAPA -->
 <div id="mapa" style="display:none;">
 <div class="back" onclick="goHome()">⬅ Zpět</div>
-<iframe src="https://www.google.com/maps/d/embed?mid=12aDzLFcwAqOVW47bT8uIo2bEsoE" style="width:100%; height:90vh;"></iframe>
+<iframe src="https://www.google.com/maps/d/embed?mid=12aDzLFcwAqOVW47bT8uIo2bEsoE" style="width:100%; height:90vh; border:none;"></iframe>
 </div>
 
+<!-- DETAIL -->
 <div id="detail" style="display:none;">
 <div class="back" onclick="showPage('vozidla')">⬅ Zpět</div>
 <input class="search" placeholder="🔍 Hledat..." oninput="searchText(this.value)">
@@ -82,12 +85,12 @@ border-radius:8px;
 
 <script>
 
-// service worker update
+// SERVICE WORKER
 if ('serviceWorker' in navigator) {
-navigator.serviceWorker.register('service-worker.js').then(reg=>reg.update());
+navigator.serviceWorker.register('service-worker.js').then(r=>r.update());
 }
 
-// navigace
+// NAVIGACE
 function showPage(p){
 home.style.display="none";
 vozidla.style.display="none";
@@ -98,7 +101,7 @@ document.getElementById(p).style.display="block";
 }
 function goHome(){ showPage("home"); }
 
-// čas + směna
+// ČAS + SMĚNA
 function updateInfo(){
 let now=new Date();
 let start=new Date(2024,0,1);
@@ -115,7 +118,7 @@ infoBox.innerHTML=`
 setInterval(updateInfo,1000);
 updateInfo();
 
-// hasicum
+// HASIČŮM
 function openHasicum(){
 let ua=navigator.userAgent;
 if(/android/i.test(ua)){
@@ -125,14 +128,28 @@ window.location.href="https://apps.apple.com/";
 }
 }
 
-// render
+// RENDER
 function render(data,isCAS){
 let html="";
 
 if(isCAS){
-html+=`<div class="quick"><div>4000L</div><div>324kW</div><div>SCANIA</div><div>110km/h</div></div>`;
+html+=`<div class="quick">
+<div>💧 4000L</div>
+<div>🧯 250L</div>
+<div>⚡ 324kW</div>
+<div>🚛 SCANIA</div>
+<div>📅 2021</div>
+<div>🏎️ 110km/h</div>
+</div>`;
 }else{
-html+=`<div class="quick"><div>100kW</div><div>3.0 dCi</div><div>3500kg</div><div>1460kg</div></div>`;
+html+=`<div class="quick">
+<div>⚡ 100kW</div>
+<div>🔧 3.0 dCi</div>
+<div>💪 320Nm</div>
+<div>🚛 3500kg</div>
+<div>📦 1460kg</div>
+<div>📏 L2H2</div>
+</div>`;
 }
 
 data.forEach((s,i)=>{
@@ -146,54 +163,97 @@ ${s.veci.map(v=>`<div class="item">${v}</div>`).join("")}
 content.innerHTML=html;
 }
 
-// otevření
-function openCAS(){ showPage("detail"); render(sekceCAS,true); }
-function openDA(){ showPage("detail"); render(sekceDA,false); }
-
-// toggle
+// TOGGLE
 function toggle(i){
 let el=document.getElementById("sec"+i);
 el.style.display=el.style.display==="block"?"none":"block";
 }
 
-// search
+// SEARCH
 function searchText(text){
 text=text.toLowerCase();
+
 document.querySelectorAll(".item").forEach(el=>{
-let t=el.innerText;
-if(t.toLowerCase().includes(text)){
+let original=el.innerText;
+let lower=original.toLowerCase();
+
+if(lower.includes(text) && text!==""){
 el.style.display="block";
-el.innerHTML=t.replace(new RegExp(text,"gi"),m=>`<span class="highlight">${m}</span>`);
+el.innerHTML=original.replace(new RegExp(text,"gi"),m=>`<span class="highlight">${m}</span>`);
 el.closest(".section-content").style.display="block";
+}else if(text===""){
+el.style.display="block";
+el.innerHTML=original;
 }else{
 el.style.display="none";
+el.innerHTML=original;
 }
 });
 }
 
-// ===== CAS KOMPLETNÍ =====
+// ===== KOMPLETNÍ CAS =====
 const sekceCAS = [
-{nazev:"Prostor řidiče a velitele", veci:["Držák tablet","RDST Motorola","Termokamera","Vesta HASIČI","Vesta VELITEL"]},
-{nazev:"Prostor před lavicí", veci:["Zdravotnický batoh","Termokamera","RDST","Svítilny"]},
-{nazev:"Levá přední", veci:["Elektrocentrála","Motorová pila","Rozbrušovačka"]},
-{nazev:"Pravá přední", veci:["Plovoucí čerpadlo","Zvedací vaky","Ventilátor"]},
-{nazev:"Levá prostřední", veci:["Hadice B,C,D","Rozdělovač","Proudnice"]},
-{nazev:"Pravá prostřední", veci:["Lezecké přepravky","Nosítka","Sorbční výbava"]},
-{nazev:"Levá zadní", veci:["Sekery","PHP","Hydrantové klíče"]},
-{nazev:"Pravá zadní", veci:["Lednice","Mikrovlnka"]},
-{nazev:"Střecha", veci:["Žebřík","Savice","Stan"]},
-{nazev:"Lezecké vybavení", veci:["Postroj","Karabiny","Blokant","Lékárnička"]},
-{nazev:"Parametry", veci:["SCANIA","2021","324kW","4000L","110km/h"]}
+{nazev:"Prostor řidiče a velitele", veci:[
+"Držák na tablet + tablet","RDST Motorola (2x)","Termokamera","Vesta HASIČI / VELITEL"
+]},
+{nazev:"Prostor před lavicí", veci:[
+"Zdravotnický batoh","Termokamery","RDST Motorola","Ruční svítilny"
+]},
+{nazev:"Levá přední", veci:[
+"Elektrocentrála","Motorová pila Husqvarna","Rozbrušovací pila","Prodlužovačky"
+]},
+{nazev:"Pravá přední", veci:[
+"Plovoucí čerpadlo","Zvedací vaky","Průmyslový vysavač","Přetlakový ventilátor"
+]},
+{nazev:"Levá prostřední", veci:[
+"Hadice B, C, D","Rozdělovač","Proudnice"
+]},
+{nazev:"Pravá prostřední", veci:[
+"Lezecké přepravky","Vakuová nosítka","Sorbční výbava"
+]},
+{nazev:"Levá zadní", veci:[
+"VRVN","Sekery","PHP","Hydrantové klíče"
+]},
+{nazev:"Pravá zadní", veci:[
+"Lednice","Mikrovlnka","Občerstvení"
+]},
+{nazev:"Prostor u čerpadla", veci:[
+"Pěnotvorná proudnice","Hadice C","Klíče"
+]},
+{nazev:"Střecha", veci:[
+"Žebřík","Savice","Stan","Lopaty"
+]},
+{nazev:"Lezecké vybavení", veci:[
+"Postroj","Karabiny","Blokant","Lékárnička"
+]},
+{nazev:"Parametry", veci:[
+"SCANIA","2021","324kW","4000L","110km/h"
+]}
 ];
 
-// ===== DA KOMPLETNÍ =====
+// ===== KOMPLETNÍ DA =====
 const sekceDA = [
-{nazev:"Prostor řidiče", veci:["Ovladač vrat","RDST GM360","Vesta"]},
-{nazev:"Pod sedadly", veci:["Zvedák","Klíč na kola"]},
-{nazev:"Nad řidičem", veci:["Deka","Nosítka","Plachta"]},
-{nazev:"Posádka", veci:["Lano","Pláštěnky"]},
-{nazev:"Úložný prostor", veci:["Lopata","Sekera","VRVN"]},
-{nazev:"Střecha", veci:["Žebřík"]}
+{nazev:"Prostor řidiče", veci:[
+"Ovladač vrat","RDST GM360","Složka","Vesta"
+]},
+{nazev:"Pod sedadly", veci:[
+"Zvedák","Křížový klíč","Měnič"
+]},
+{nazev:"Nad řidičem", veci:[
+"Deka","Nosítka","Plachta","Dalekohled"
+]},
+{nazev:"Posádka", veci:[
+"Lano","Pláštěnky","Občerstvení"
+]},
+{nazev:"Úložný prostor", veci:[
+"Lopata","Sekera","VRVN","PG6"
+]},
+{nazev:"Hliníková bedna", veci:[
+"Rukavice","Račna","Prodlužovačka"
+]},
+{nazev:"Střecha", veci:[
+"Žebřík","Držák žebříku","Držák savic"
+]}
 ];
 
 </script>
