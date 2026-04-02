@@ -75,7 +75,7 @@ border-radius:8px;
 <!-- DETAIL -->
 <div id="detail" style="display:none;">
 <div class="back" onclick="showPage('vozidla')">⬅ Zpět</div>
-<input class="search" placeholder="🔍 Hledat..." onkeyup="searchText(this.value)">
+<input class="search" placeholder="🔍 Hledat..." oninput="searchText(this.value)">
 <div id="content"></div>
 </div>
 
@@ -185,17 +185,47 @@ render(sekceDA,false);
 }
 
 // TOGGLE
-function toggle(i){
-let el=document.getElementById("sec"+i);
-el.style.display=el.style.display==="block"?"none":"block";
+function searchText(text){
+
+text = text.toLowerCase();
+
+document.querySelectorAll(".item").forEach(el => {
+
+let original = el.getAttribute("data-original");
+
+// uloží původní text jen jednou
+if(!original){
+original = el.innerText;
+el.setAttribute("data-original", original);
 }
 
-// SEARCH
-function searchText(text){
-text=text.toLowerCase();
-document.querySelectorAll(".item").forEach(el=>{
-el.style.display=el.innerText.toLowerCase().includes(text)?"block":"none";
+let lower = original.toLowerCase();
+
+if(text === ""){
+el.style.display = "block";
+el.innerHTML = original;
+return;
+}
+
+if(lower.includes(text)){
+
+el.style.display = "block";
+
+// zvýraznění
+let regex = new RegExp(`(${text})`, "gi");
+el.innerHTML = original.replace(regex, `<span style="background:yellow;font-weight:bold;">$1</span>`);
+
+// otevře sekci
+let parent = el.closest(".section-content");
+if(parent) parent.style.display = "block";
+
+}else{
+el.style.display = "none";
+el.innerHTML = original;
+}
+
 });
+
 }
 
 // ===== CAS DATA =====
