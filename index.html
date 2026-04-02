@@ -61,6 +61,10 @@ border-radius:8px;
 </div>
 
 <!-- SLUŽBY -->
+<div id="sluzby" style="display:none;">
+<div class="back" onclick="goHome()">⬅ Zpět</div>
+<iframe src="SEM_VLOZ_ODKAZ" style="width:100%; height:90vh; border:none;"></iframe>
+</div>
 
 <!-- MAPA -->
 <div id="mapa" style="display:none;">
@@ -71,14 +75,12 @@ border-radius:8px;
 <!-- DETAIL -->
 <div id="detail" style="display:none;">
 <div class="back" onclick="showPage('vozidla')">⬅ Zpět</div>
-<input class="search" placeholder="🔍 Hledat..." oninput="searchText(this.value)">
+<input class="search" placeholder="🔍 Hledat..." onkeyup="searchText(this.value)">
 <div id="content"></div>
 </div>
 
 <script>
-function openSluzby(){
-window.location.href = "https://docs.google.com/spreadsheets/d/1YkziVkwffJxgKvp6J7__u2TVs_T3QOcyAS_QdTm_OFs/edit?gid=1742437687";
-}
+
 // NAVIGACE
 function showPage(p){
 home.style.display="none";
@@ -183,75 +185,17 @@ render(sekceDA,false);
 }
 
 // TOGGLE
+function toggle(i){
+let el=document.getElementById("sec"+i);
+el.style.display=el.style.display==="block"?"none":"block";
+}
+
+// SEARCH
 function searchText(text){
-function normalizeText(text){
-return text
-.toLowerCase()
-.normalize("NFD")
-.replace(/[\u0300-\u036f]/g, "");
-}
-
-function searchText(text){
-
-let search = normalizeText(text);
-
-document.querySelectorAll(".item").forEach(el => {
-
-// uloží původní text jen jednou
-if(!el.dataset.original){
-el.dataset.original = el.textContent;
-}
-
-let original = el.dataset.original;
-let normalized = normalizeText(original);
-
-if(search === ""){
-el.style.display = "block";
-el.textContent = original;
-return;
-}
-
-if(normalized.includes(search)){
-
-el.style.display = "block";
-
-// zvýraznění (bez rozbití iOS)
-let regex = new RegExp(`(${text})`, "gi");
-
-try{
-el.innerHTML = original.replace(regex, `<span style="background:yellow;font-weight:bold;">$1</span>`);
-}catch{
-el.textContent = original;
-}
-
-// otevře sekci
-let parent = el.closest(".section-content");
-if(parent) parent.style.display = "block";
-
-}else{
-el.style.display = "none";
-el.textContent = original;
-}
-
+text=text.toLowerCase();
+document.querySelectorAll(".item").forEach(el=>{
+el.style.display=el.innerText.toLowerCase().includes(text)?"block":"none";
 });
-
-}
-
-// zvýraznění
-let regex = new RegExp(`(${text})`, "gi");
-el.innerHTML = original.replace(regex, `<span style="background:yellow;font-weight:bold;">$1</span>`);
-
-// otevře sekci
-let parent = el.closest(".section-content");
-if(parent) parent.style.display = "block";
-
-}else{
-el.style.display = "none";
-el.innerHTML = original;
-}
-
-});
-
 }
 
 // ===== CAS DATA =====
