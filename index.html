@@ -3,7 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>JSDH Havířov</title>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#c62828">
+<link rel="apple-touch-icon" href="icon-192.png">
 
 <style>
 body { margin:0; font-family:Arial; background:#f2f2f2; }
@@ -81,6 +86,11 @@ border-radius:8px;
 
 <script>
 
+// SERVICE WORKER
+if ('serviceWorker' in navigator) {
+navigator.serviceWorker.register('service-worker.js');
+}
+
 // NAVIGACE
 function showPage(p){
 home.style.display="none";
@@ -113,23 +123,10 @@ infoBox.innerHTML=`
 setInterval(updateInfo,1000);
 updateInfo();
 
-// OTEVŘENÍ HASIČŮM.CZ
+// HASIČŮM APP
 function openHasicum(){
-
-// pokus o otevření appky
-window.location.href = "hasicum://";
-
-setTimeout(function(){
-
-// fallback Android
-window.location.href = "https://play.google.com/store/apps/details?id=cz.hasicum.app";
-
-// fallback iOS
-setTimeout(function(){
-window.location.href = "https://apps.apple.com/";
-},1000);
-
-},1000);
+window.location.href="hasicum://";
+setTimeout(()=>{window.location.href="https://play.google.com/store/apps/details?id=cz.hasicum.app";},1000);
 }
 
 // RENDER
@@ -171,7 +168,7 @@ ${s.veci.map(v=>`<div class="item">${v}</div>`).join("")}
 content.innerHTML=html;
 }
 
-// OTEVŘENÍ VOZIDEL
+// OTEVŘENÍ
 function openCAS(){
 showPage("detail");
 title.innerText="CAS 20/4000/250 S2R - HKA 701";
@@ -264,14 +261,6 @@ const sekceCAS = [
 "1x Ejektor","1x Pěnotvorná proudnice P3","1x Ocelové lano","1x Stan žlutý",
 "2x Savice","2x Metla","3x Lopata","1x Páteřová deska","1x Polní lopatka",
 "1x Vidle","1x Páčidlo PU1","1x Pila dlouhého dosahu","2x Tyč stabilizační","2x Dřevěný hranol","1x Dekontaminační bazén"
-]},
-{nazev:"🧗 Lezecké vybavení", veci:[
-"Postroj","Slaňovací 8","Karabiny (ocel + dural)",
-"Hrudní blokant","Ruční blokant","Lékárnička","Evakuační trojúhelník"
-]},
-{nazev:"⚙️ Parametry vozidla", veci:[
-"Podvozek: SCANIA","Rok výroby: 2021","Výkon: 324 kW",
-"Objem vody: 4000 L","Pěnidlo: 250 L","Hmotnost: 18 000 kg","Max. rychlost: 110 km/h"
 ]}
 ];
 
