@@ -123,45 +123,44 @@ updateInfo();
 // OTEVŘENÍ HASIČŮM.CZ
 function openHasicum(){
 
-let ua = navigator.userAgent || navigator.vendor || window.opera;
+    let ua = navigator.userAgent || navigator.vendor || window.opera;
 
-// iOS
-if (/iPhone|iPad|iPod/i.test(ua)) {
+    // ===== iOS =====
+    if (/iPhone|iPad|iPod/i.test(ua)) {
 
-let start = Date.now();
+        let start = Date.now();
 
-// pokus otevřít appku
-window.location = "hasicum://";
+        // pokus otevřít appku
+        window.location.href = "hasicum://";
 
-// fallback na App Store pokud se neotevře
-setTimeout(function(){
-if (Date.now() - start < 2000) {
-window.location = "https://apps.apple.com/cz/app/hasi%C4%8D%C5%AFm-cz/id1571187056";
-}
-}, 1500);
+        // fallback na App Store
+        setTimeout(function(){
+            if (Date.now() - start < 2000) {
+                window.location.href = "https://apps.apple.com/cz/app/hasi%C4%8D%C5%AFm-cz/id1571187056";
+            }
+        }, 1500);
+    }
 
-}
+    // ===== Android =====
+    else if (/android/i.test(ua)) {
 
-// Android
-else if (/android/i.test(ua)) {
+        let start = Date.now();
 
-let start = Date.now();
+        // pokus otevřít appku
+        window.location.href = "intent://#Intent;scheme=hasicum;package=cz.hasicum.app;end";
 
-window.location = "intent://#Intent;scheme=hasicum;package=cz.hasicum.app;end";
+        // fallback na Google Play
+        setTimeout(function(){
+            if (Date.now() - start < 2000) {
+                window.location.href = "https://play.google.com/store/apps/details?id=cz.hasicum.app";
+            }
+        }, 1500);
+    }
 
-setTimeout(function(){
-if (Date.now() - start < 2000) {
-window.location = "https://play.google.com/store/apps/details?id=cz.hasicum.app";
-}
-}, 1500);
-
-}
-
-// ostatní
-else {
-window.open("https://www.hasicum.cz", "_blank");
-}
-
+    // ===== Ostatní (PC apod.) =====
+    else {
+        window.location.href = "https://www.hasicum.cz";
+    }
 }
 
 // RENDER
