@@ -42,17 +42,12 @@ border-radius:8px;
 <!-- HOME -->
 <div id="home">
 <div id="infoBox" class="card" style="margin:15px;"></div>
-<!-- PDF -->
-<div id="pdf" style="display:none;">
-<div class="back" onclick="showPage('dokumenty')">⬅ Zpět</div>
-<iframe id="pdfFrame" style="width:100%; height:90vh; border:none;"></iframe>
-</div>
+
 <div class="grid">
 <div class="card" onclick="showPage('vozidla')">🚒 Vozidla</div>
 <div class="card" onclick="openSluzby()">📅 Služby</div>
 <div class="card" onclick="showPage('mapa')">🗺️ Mapové podklady</div>
 <div class="card" onclick="openMapaHZS()">📍 Mapa HZS</div>
-<div class="card" onclick="showPage('dokumenty')">📄 Dokumenty</div>
 </button>
 </div>
 </div>
@@ -103,17 +98,7 @@ document.getElementById(p).style.display="block";
 title.innerText="JSDH Havířov";
 }
 function goHome(){ showPage("home"); }
-    
-//Dokumenty
-<!-- DOKUMENTY -->
-<div id="dokumenty" style="display:none;">
-<div class="back" onclick="goHome()">⬅ Zpět</div>
 
-<div class="card" onclick="openPredani()">
-📄 Předání místa zásahu
-</div>
-
-</div>
 // ČAS + SMĚNY
 function updateInfo(){
 
@@ -414,9 +399,6 @@ const sekceDA = [
 ];
 
 </script>
-function openPredani(){
-    showPage('pdf');
-    document.getElementById("pdfFrame").src = "file:///C:/Users/U%C5%BEivatel/Desktop/JSDH/P%C5%99ed%C3%A1n%C3%AD%20m%C3%ADsta%20z%C3%A1sahu.pdf";
-}
+
 </body>
 </html>
