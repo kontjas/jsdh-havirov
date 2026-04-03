@@ -48,6 +48,9 @@ border-radius:8px;
 <div class="card" onclick="openSluzby()">📅 Služby</div>
 <div class="card" onclick="showPage('mapa')">🗺️ Mapa výjezdu</div>
 <div class="card" onclick="openHasicum()">🚨 Hasičům.CZ</div>
+<button class="button" onclick="openMapaHZS()">
+    Mapa HZS
+</button>
 </div>
 </div>
 
@@ -83,7 +86,9 @@ border-radius:8px;
 function openSluzby(){
 window.location.href = "https://docs.google.com/spreadsheets/d/1YkziVkwffJxgKvp6J7__u2TVs_T3QOcyAS_QdTm_OFs/edit?gid=1742437687";
 }
-
+function openMapaHZS() {
+    window.open("https://terinos.izscr.cz/client/", "_blank");
+}
 // NAVIGACE
 function showPage(p){
 home.style.display="none";
@@ -177,8 +182,8 @@ html+=`
 }else{
 html+=`
 <div class="quick">
-<div>⚡ 100 kW</div>
-<div>🔧 3.0 dCi</div>
+<div>⚡ 88 kW</div>
+<div>🔧 2.5 dCi</div>
 <div>💪 320 Nm</div>
 <div>🚛 3500 kg</div>
 <div>📦 1460 kg</div>
