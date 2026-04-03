@@ -48,6 +48,7 @@ border-radius:8px;
 <div class="card" onclick="openSluzby()">📅 Služby</div>
 <div class="card" onclick="showPage('mapa')">🗺️ Mapové podklady</div>
 <div class="card" onclick="openMapaHZS()">📍 Mapa HZS</div>
+<div class="card" onclick="showPage('dzp')">📘 DZP & HK</div>
 </button>
 </div>
 </div>
@@ -73,6 +74,26 @@ border-radius:8px;
 <iframe src="https://www.google.com/maps/d/embed?mid=12aDzLFcwAqOVW47bT8uIo2bEsoE" style="width:100%; height:90vh; border:none;"></iframe>
 </div>
 
+<!-- DZP MENU -->
+<div id="dzp" style="display:none;">
+<div class="back" onclick="goHome()">⬅ Zpět</div>
+
+<div class="card" onclick="openDZP()">📘 Dokumentace zdolávání požáru</div>
+<div class="card" onclick="openHK()">📄 Havarijní karty</div>
+</div>
+
+<!-- DZP VIEW -->
+<div id="dzp_view" style="display:none;">
+<div class="back" onclick="showPage('dzp')">⬅ Zpět</div>
+<iframe id="dzpFrame" style="width:100%; height:90vh; border:none;"></iframe>
+</div>
+
+<!-- HK VIEW -->
+<div id="hk_view" style="display:none;">
+<div class="back" onclick="showPage('dzp')">⬅ Zpět</div>
+<iframe id="hkFrame" style="width:100%; height:90vh; border:none;"></iframe>
+</div>
+
 <!-- DETAIL -->
 <div id="detail" style="display:none;">
 <div class="back" onclick="showPage('vozidla')">⬅ Zpět</div>
@@ -96,6 +117,9 @@ sluzby.style.display="none";
 mapa.style.display="none";
 document.getElementById(p).style.display="block";
 title.innerText="JSDH Havířov";
+dzp.style.display="none";
+dzp_view.style.display="none";
+hk_view.style.display="none";
 }
 function goHome(){ showPage("home"); }
 
@@ -398,6 +422,16 @@ const sekceDA = [
 ]}
 ];
 
+// ===== DZP / HK =====
+function openDZP(){
+    showPage('dzp_view');
+    document.getElementById("dzpFrame").src = "https://drive.google.com/embeddedfolderview?id=1GEvgAPk4Ir7RxFuXpfOIke4oYePy3Ida#grid";
+}
+
+function openHK(){
+    showPage('hk_view');
+    document.getElementById("hkFrame").src = "https://drive.google.com/embeddedfolderview?id=0B6J7vQXobLS8fmNxMFdXQ3JmdXY3ZXdUc0xmM3VrRmFWSEg1akE5TTBaVXhYYUVYSERRWjA#grid";
+}
 </script>
 
 </body>
