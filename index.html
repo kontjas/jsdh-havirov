@@ -49,7 +49,6 @@ border-radius:8px;
 <div class="card" onclick="showPage('mapa')">🗺️ Mapové podklady</div>
 <div class="card" onclick="openMapaHZS()">📍 Mapa HZS</div>
 <div class="card" onclick="showPage('dzp')">📘 DZP & HK</div>
-</button>
 </div>
 </div>
 
@@ -115,11 +114,11 @@ vozidla.style.display="none";
 detail.style.display="none";
 sluzby.style.display="none";
 mapa.style.display="none";
-document.getElementById(p).style.display="block";
-title.innerText="JSDH Havířov";
 dzp.style.display="none";
 dzp_view.style.display="none";
 hk_view.style.display="none";
+document.getElementById(p).style.display="block";
+title.innerText="JSDH Havířov";
 }
 function goHome(){ showPage("home"); }
 
