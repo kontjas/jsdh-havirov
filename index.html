@@ -87,6 +87,22 @@ window.location.href = "https://docs.google.com/spreadsheets/d/1YkziVkwffJxgKvp6
 function openMapaHZS() {
     window.open("https://terinos.izscr.cz/client/", "_blank");
 }
+function updateInfo(){
+let now=new Date();
+let time=now.toLocaleTimeString("cs-CZ");
+let date=now.toLocaleDateString("cs-CZ");
+
+let start=new Date(2024,0,1);
+let diff=Math.floor((now-start)/(1000*60*60*24));
+let smena=["A","B","C"][diff%3];
+
+infoBox.innerHTML=`
+<div style="font-size:18px;font-weight:bold;">${time}</div>
+<div>${date}</div>
+<hr>
+<div style="font-size:20px;">🚒 Směna ${smena}</div>
+`;
+}
 // NAVIGACE
 function showPage(p){
 home.style.display="none";
