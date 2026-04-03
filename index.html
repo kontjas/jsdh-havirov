@@ -47,7 +47,6 @@ border-radius:8px;
 <div class="card" onclick="showPage('vozidla')">🚒 Vozidla</div>
 <div class="card" onclick="openSluzby()">📅 Služby</div>
 <div class="card" onclick="showPage('mapa')">🗺️ Mapové podklady</div>
-<div class="card" onclick="openHasicum()">🚨 Hasičům.CZ</div>
 <div class="card" onclick="openMapaHZS()">📍 Mapa HZS</div>
 </button>
 </div>
@@ -119,49 +118,6 @@ infoBox.innerHTML=`
 }
 setInterval(updateInfo,1000);
 updateInfo();
-
-// OTEVŘENÍ HASIČŮM.CZ
-function openHasicum(){
-
-let ua = navigator.userAgent || navigator.vendor || window.opera;
-
-// iOS
-if (/iPhone|iPad|iPod/i.test(ua)) {
-
-let start = Date.now();
-
-// pokus otevřít appku
-window.location = "Hasičům.CZ://";
-
-// fallback na App Store pokud se neotevře
-setTimeout(function(){
-if (Date.now() - start < 2000) {
-window.location = "https://apps.apple.com/cz/app/hasi%C4%8D%C5%AFm-cz/id6753670107";
-}
-}, 1500);
-
-}
-
-// Android
-else if (/android/i.test(ua)) {
-
-let start = Date.now();
-
-window.location = "intent://#Intent;scheme=hasicum;package=cz.hasicum.app;end";
-
-setTimeout(function(){
-if (Date.now() - start < 2000) {
-window.location = "https://play.google.com/store/apps/details?id=cz.hasicum.kmp.android";
-}
-}, 1500);
-
-}
-
-// ostatní
-else {
-window.open("https://vprport.eu/pu/index.php?page=pu&pjpouid=8103130&passwd=4f749e9144b0d37a2a26048c097cae9f&minutes=10", "_blank");
-}
-
 }
 
 // RENDER
