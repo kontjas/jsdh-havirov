@@ -123,44 +123,44 @@ updateInfo();
 // OTEVŘENÍ HASIČŮM.CZ
 function openHasičům.CZ(){
 
-    let ua = navigator.userAgent || navigator.vendor || window.opera;
+let ua = navigator.userAgent || navigator.vendor || window.opera;
 
-    // ===== iOS =====
-    if (/iPhone|iPad|iPod/i.test(ua)) {
+// ===== iOS =====
+if (/iPhone|iPad|iPod/i.test(ua)) {
 
-        let start = Date.now();
+let start = Date.now();
 
-        // pokus otevřít appku
-        window.location.href = "Hasičům.CZ://";
+// pokus otevřít appku
+window.location.href = "Hasičům.CZ://";
 
-        // fallback na App Store
-        setTimeout(function(){
-            if (Date.now() - start < 2000) {
-                window.location.href = "https://apps.apple.com/cz/app/hasi%C4%8D%C5%AFm-cz/id6753670107";
-            }
-        }, 1500);
-    }
+// fallback na App Store
+setTimeout(function(){
+if (Date.now() - start < 2000) {
+window.location.href = "https://apps.apple.com/cz/app/hasi%C4%8D%C5%AFm-cz/id6753670107";
+}
+}, 1500);
+}
 
-    // ===== Android =====
-    else if (/android/i.test(ua)) {
+// ===== Android =====
+else if (/android/i.test(ua)) {
 
-        let start = Date.now();
+let start = Date.now();
 
-        // pokus otevřít appku
-        window.location.href = "intent://#Intent;scheme=hasicum;package=cz.hasicum.app;end";
+// pokus otevřít appku
+window.location.href = "intent://#Intent;scheme=hasicum;package=cz.hasicum.app;end";
 
-        // fallback na Google Play
-        setTimeout(function(){
-            if (Date.now() - start < 2000) {
-                window.location.href = "https://play.google.com/store/apps/details?id=cz.hasicum.kmp.android";
-            }
-        }, 1500);
-    }
+// fallback na Google Play
+setTimeout(function(){
+if (Date.now() - start < 2000) {
+window.location.href = "https://play.google.com/store/apps/details?id=cz.hasicum.kmp.android";
+}
+}, 1500);
+}
 
-    // ===== Ostatní (PC apod.) =====
-    else {
-        window.location.href = "https://www.hasicum.cz";
-    }
+// ===== Ostatní (PC apod.) =====
+else {
+window.location.href = "https://www.hasicum.cz";
+}
 }
 
 // RENDER
