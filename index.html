@@ -101,6 +101,9 @@ function goHome(){ showPage("home"); }
 
 // ČAS + SMĚNY
 function updateInfo(){
+
+let box = document.getElementById("infoBox");
+
 let now=new Date();
 let time=now.toLocaleTimeString("cs-CZ");
 let date=now.toLocaleDateString("cs-CZ");
@@ -109,7 +112,7 @@ let start=new Date(2024,0,1);
 let diff=Math.floor((now-start)/(1000*60*60*24));
 let smena=["A","B","C"][diff%3];
 
-infoBox.innerHTML=`
+box.innerHTML = `
 <div style="font-size:18px;font-weight:bold;">${time}</div>
 <div>${date}</div>
 <hr>
