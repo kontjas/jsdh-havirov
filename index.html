@@ -93,6 +93,14 @@ border-radius:8px;
 <iframe id="hkFrame" style="width:100%; height:90vh; border:none;"></iframe>
 </div>
 
+<!-- HK SEZNAM -->
+<div id="hk_list" style="display:none;">
+<div class="back" onclick="showPage('dzp')">⬅ Zpět</div>
+
+<input class="search" placeholder="🔍 Hledat HK..." oninput="searchHK(this.value)">
+
+<div id="hkContent"></div>
+</div>
 <!-- DETAIL -->
 <div id="detail" style="display:none;">
 <div class="back" onclick="showPage('vozidla')">⬅ Zpět</div>
@@ -117,6 +125,8 @@ mapa.style.display="none";
 dzp.style.display="none";
 dzp_view.style.display="none";
 hk_view.style.display="none";
+hk_list.style.display="none";
+    
 document.getElementById(p).style.display="block";
 title.innerText="JSDH Havířov";
 }
@@ -428,8 +438,42 @@ function openDZP(){
 }
 
 function openHK(){
-    showPage('hk_view');
-    document.getElementById("hkFrame").src = "https://drive.google.com/embeddedfolderview?id=0B6J7vQXobLS8fmNxMFdXQ3JmdXY3ZXdUc0xmM3VrRmFWSEg1akE5TTBaVXhYYUVYSERRWjA#grid";
+    showPage('hk_list');
+    renderHK(hkData);
+}
+}
+const hkData = [
+{ name: "BOCH1", url: "https://kontjas.github.io/jsdh-havirov/HK_BOCH1.pdf" },
+{ name: "KBHA", url: "https://kontjas.github.io/jsdh-havirov/HK_KBHA.pdf" },
+{ name: "MHCP", url: "https://kontjas.github.io/jsdh-havirov/HK_MHCP.pdf" },
+{ name: "MKHA", url: "https://kontjas.github.io/jsdh-havirov/HK_MKHA.pdf" },
+{ name: "PRI", url: "https://kontjas.github.io/jsdh-havirov/HK_PRI.pdf" },
+{ name: "ZSCT", url: "https://kontjas.github.io/jsdh-havirov/HK_ZSCT.pdf" },
+{ name: "ZSHA", url: "https://kontjas.github.io/jsdh-havirov/HK_ZSHA.pdf" },
+{ name: "ZSOR", url: "https://kontjas.github.io/jsdh-havirov/HK_ZSOR.pdf" }
+];
+function renderHK(data){
+let html = "";
+
+data.forEach(d => {
+html += `
+<div class="card" onclick="window.open('${d.url}')">
+📄 ${d.name}
+</div>
+`;
+});
+
+hkContent.innerHTML = html;
+}
+
+function searchHK(text){
+let search = text.toLowerCase();
+
+let filtered = hkData.filter(d =>
+d.name.toLowerCase().includes(search)
+);
+
+renderHK(filtered);
 }
 </script>
 
