@@ -435,10 +435,17 @@ const sekceDA = [
 
 // ===== DZP / HK =====
 function openDZP(){
-    window.open(
-        "https://drive.google.com/drive/folders/1GEvgAPk4Ir7RxFuXpfOIke4oYePy3Ida",
-        "_blank"
-    );
+
+let isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+if(isIOS){
+
+alert("Pro otevření DZP použij Safari (Sdílet → Otevřít v Safari)");
+
+}
+
+window.open("https://drive.google.com/drive/folders/1GEvgAPk4Ir7RxFuXpfOIke4oYePy3Ida", "_blank");
+
 }
 
 function openHK(){
