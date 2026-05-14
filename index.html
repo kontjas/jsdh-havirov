@@ -49,6 +49,7 @@ border-radius:8px;
 <div class="card" onclick="showPage('mapa')">🗺️ Mapové podklady</div>
 <div class="card" onclick="openMapaHZS()">📍 Mapa HZS</div>
 <div class="card" onclick="showPage('dzp')">📘 DZP & HK</div>
+<div class="card" onclick="callKOPIS()">📞 KOPIS</div>
 </div>
 </div>
 
@@ -116,6 +117,9 @@ window.location.href = "https://docs.google.com/spreadsheets/d/1YkziVkwffJxgKvp6
 }
 function openMapaHZS() {
     window.open("https://terinos.izscr.cz/client/", "_blank");
+}
+function callKOPIS() {
+    window.location.href = "tel:+420776854671";
 }
 // NAVIGACE
 function showPage(p){
