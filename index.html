@@ -50,6 +50,7 @@ border-radius:8px;
 <div class="card" onclick="openMapaHZS()">📍 Mapa HZS</div>
 <div class="card" onclick="showPage('dzp')">📘 DZP & HK</div>
 <div class="card" onclick="callKOPIS()">📞 KOPIS</div>
+<div class="card" onclick="openPortAll()">🖥️ Port.all</div>
 </div>
 </div>
 
@@ -104,6 +105,16 @@ border-radius:8px;
 
 <div id="hkContent"></div>
 </div>
+
+<!-- PORT.ALL -->
+<div id="portall" style="display:none;">
+<div class="back" onclick="goHome()">⬅ Zpět</div>
+
+<iframe 
+src="https://jsdh.izscr.cz/" 
+style="width:100%; height:90vh; border:none;">
+</iframe>
+</div>
 <!-- DETAIL -->
 <div id="detail" style="display:none;">
 <div class="back" onclick="showPage('vozidla')">⬅ Zpět</div>
@@ -121,6 +132,9 @@ function openMapaHZS() {
 function callKOPIS() {
     window.location.href = "tel:+420950739831";
 }
+function openPortAll() {
+    showPage('portall');
+}
 // NAVIGACE
 function showPage(p){
 home.style.display="none";
@@ -132,6 +146,7 @@ dzp.style.display="none";
 dzp_view.style.display="none";
 hk_view.style.display="none";
 hk_list.style.display="none";
+portall.style.display="none";
     
 document.getElementById(p).style.display="block";
 title.innerText="JSDH Havířov";
