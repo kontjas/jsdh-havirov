@@ -6,6 +6,82 @@
 <title>JSDH Havířov</title>
 
 <style>
+.vehicle-status {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  margin-top:10px;
+  font-size:14px;
+  font-weight:bold;
+}
+
+.status-dot {
+  width:12px;
+  height:12px;
+  border-radius:50%;
+  display:inline-block;
+}
+
+.status-ready {
+  background:#2e7d32;
+}
+
+.status-limited {
+  background:#f9a825;
+}
+
+.status-out {
+  background:#c62828;
+}
+
+.status-box {
+  background:white;
+  margin:10px;
+  padding:15px;
+  border-radius:12px;
+  text-align:center;
+}
+
+.status-main {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  font-size:18px;
+  font-weight:bold;
+  margin-bottom:8px;
+}
+
+.status-reason {
+  color:#555;
+  font-size:14px;
+  margin:6px 0 10px;
+}
+
+.status-button {
+  border:none;
+  border-radius:10px;
+  padding:10px 14px;
+  margin:4px;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+.status-button.ready {
+  background:#e8f5e9;
+  color:#2e7d32;
+}
+
+.status-button.limited {
+  background:#fff8e1;
+  color:#8d6e00;
+}
+
+.status-button.out {
+  background:#ffebee;
+  color:#c62828;
+}
 body { margin:0; font-family:Arial; background:#f2f2f2; }
 .header { text-align:center; padding:15px; font-weight:bold; background:#c62828; color:white; }
 .grid { display:grid; grid-template-columns:1fr 1fr; gap:15px; padding:15px; }
@@ -58,9 +134,19 @@ border-radius:8px;
 <div id="vozidla" style="display:none;">
 <div class="back" onclick="goHome()">⬅ Zpět</div>
 
-<div class="card" onclick="openCAS()">CAS 20/4000/250 S2R - HKA 701</div>
-<div class="card" onclick="openDA()">DA 12 Renault - HKA 700</div>
-<div class="card">VEA Škoda Yeti - HKA 702</div>
+<div class="card" onclick="openCAS()">
+CAS 20/4000/250 S2R - HKA 701
+<div id="status-CAS" class="vehicle-status"></div>
+</div>
+
+<div class="card" onclick="openDA()">
+DA 12 Renault - HKA 700
+<div id="status-DA" class="vehicle-status"></div>
+</div>
+
+<div class="card" onclick="openVEA()">
+VEA Škoda Yeti - HKA 702
+<div id="status-VEA" class="vehicle-status"></div>
 </div>
 
 <!-- SLUŽBY -->
@@ -118,7 +204,11 @@ style="width:100%; height:90vh; border:none;">
 <!-- DETAIL -->
 <div id="detail" style="display:none;">
 <div class="back" onclick="showPage('vozidla')">⬅ Zpět</div>
+
+<div id="detailStatus"></div>
+
 <input class="search" placeholder="🔍 Hledat..." oninput="searchText(this.value)">
+
 <div id="content"></div>
 </div>
 
@@ -219,7 +309,430 @@ window.open("https://www.hasicum.cz", "_blank");
 }
 
 }
+// ===== STAVY VOZIDEL =====
 
+const vehicleStatusDefaults = {
+  CAS: {
+    status: "ready",
+    reason: ""
+  },
+  DA: {
+    status: "ready",
+    reason: ""
+  },
+  VEA: {
+    status: "ready",
+    reason: ""
+  }
+};
+
+let currentVehicle = null;
+
+
+// Načtení stavů z telefonu/PC
+function getVehicleStatuses(){
+
+  try{
+
+    const saved = localStorage.getItem("jsdhVehicleStatuses");
+
+    if(saved){
+
+      const parsed = JSON.parse(saved);
+
+      return {
+        CAS: {
+          ...vehicleStatusDefaults.CAS,
+          ...(parsed.CAS || {})
+        },
+
+        DA: {
+          ...vehicleStatusDefaults.DA,
+          ...(parsed.DA || {})
+        },
+
+        VEA: {
+          ...vehicleStatusDefaults.VEA,
+          ...(parsed.VEA || {})
+        }
+      };
+
+    }
+
+  }catch(e){
+
+    console.error("Nepodařilo se načíst stavy vozidel:", e);
+
+  }
+
+  return JSON.parse(JSON.stringify(vehicleStatusDefaults));
+
+}
+
+
+// Uložení stavů
+function saveVehicleStatuses(statuses){
+
+  try{
+
+    localStorage.setItem(
+      "jsdhVehicleStatuses",
+      JSON.stringify(statuses)
+    );
+
+  }catch(e){
+
+    console.error("Nepodařilo se uložit stavy vozidel:", e);
+
+  }
+
+}
+
+
+// Informace o jednotlivých stavech
+function getStatusInfo(status){
+
+  if(status === "limited"){
+
+    return {
+      label: "Omezení",
+      className: "status-limited",
+      icon: "🟡"
+    };
+
+  }
+
+  if(status === "out"){
+
+    return {
+      label: "Mimo provoz",
+      className: "status-out",
+      icon: "🔴"
+    };
+
+  }
+
+  return {
+
+    label: "Připraveno",
+    className: "status-ready",
+    icon: "🟢"
+
+  };
+
+}
+
+
+// Zobrazení stavů u vozidel
+function renderVehicleStatuses(){
+
+  const statuses = getVehicleStatuses();
+
+  const vehicles = [
+
+    {
+      key: "CAS",
+      elementId: "status-CAS"
+    },
+
+    {
+      key: "DA",
+      elementId: "status-DA"
+    },
+
+    {
+      key: "VEA",
+      elementId: "status-VEA"
+    }
+
+  ];
+
+
+  vehicles.forEach(vehicle => {
+
+    const el = document.getElementById(vehicle.elementId);
+
+    if(!el) return;
+
+    const data = statuses[vehicle.key];
+
+    const info = getStatusInfo(data.status);
+
+
+    el.innerHTML = `
+
+      <span class="status-dot ${info.className}"></span>
+
+      <span>${info.label}</span>
+
+    `;
+
+
+    if(data.status === "limited" && data.reason){
+
+      el.innerHTML += `
+
+        <span style="font-weight:normal;">
+          – ${escapeHtml(data.reason)}
+        </span>
+
+      `;
+
+    }
+
+  });
+
+
+  if(currentVehicle){
+
+    renderDetailStatus(currentVehicle);
+
+  }
+
+}
+
+
+// Zobrazení stavu v detailu vozidla
+function renderDetailStatus(vehicleKey){
+
+  const box = document.getElementById("detailStatus");
+
+  if(!box) return;
+
+
+  const statuses = getVehicleStatuses();
+
+  const data = statuses[vehicleKey];
+
+  const info = getStatusInfo(data.status);
+
+
+  let reasonHtml = "";
+
+
+  if(data.status === "limited"){
+
+    reasonHtml = `
+
+      <div class="status-reason">
+
+        <strong>Důvod omezení:</strong>
+
+        ${data.reason
+          ? escapeHtml(data.reason)
+          : "Neuveden"}
+
+      </div>
+
+    `;
+
+  }
+
+
+  box.innerHTML = `
+
+    <div class="status-box">
+
+      <div class="status-main">
+
+        <span class="status-dot ${info.className}"></span>
+
+        <span>${info.label}</span>
+
+      </div>
+
+
+      ${reasonHtml}
+
+
+      <div>
+
+        <button
+          class="status-button ready"
+          onclick="changeVehicleStatus('${vehicleKey}','ready')">
+
+          🟢 Připraveno
+
+        </button>
+
+
+        <button
+          class="status-button limited"
+          onclick="changeVehicleStatus('${vehicleKey}','limited')">
+
+          🟡 Omezení
+
+        </button>
+
+
+        <button
+          class="status-button out"
+          onclick="changeVehicleStatus('${vehicleKey}','out')">
+
+          🔴 Mimo provoz
+
+        </button>
+
+      </div>
+
+    </div>
+
+  `;
+
+}
+
+
+// Změna stavu vozidla
+function changeVehicleStatus(vehicleKey, newStatus){
+
+  const statuses = getVehicleStatuses();
+
+
+  const vehicleNames = {
+
+    CAS: "CAS 20/4000/250 S2R - HKA 701",
+
+    DA: "DA 12 Renault - HKA 700",
+
+    VEA: "VEA Škoda Yeti - HKA 702"
+
+  };
+
+
+  const info = getStatusInfo(newStatus);
+
+
+  let reason = "";
+
+
+  // Pokud je zvoleno OMEZENÍ,
+  // vyžádáme důvod
+  if(newStatus === "limited"){
+
+    reason = prompt(
+
+      "Napiš důvod omezení pro:\n\n" +
+      vehicleNames[vehicleKey],
+
+      statuses[vehicleKey].reason || ""
+
+    );
+
+
+    // Uživatel zrušil
+    if(reason === null){
+
+      return;
+
+    }
+
+
+    reason = reason.trim();
+
+
+    // Omezení musí mít důvod
+    if(reason === ""){
+
+      alert(
+        "U stavu Omezení musí být uveden důvod."
+      );
+
+      return;
+
+    }
+
+  }
+
+
+  const oldStatus =
+    statuses[vehicleKey].status;
+
+
+  statuses[vehicleKey] = {
+
+    status: newStatus,
+
+    reason: reason
+
+  };
+
+
+  saveVehicleStatuses(statuses);
+
+
+  renderVehicleStatuses();
+
+
+  // Oznámení při změně
+  if(oldStatus !== newStatus){
+
+    let message =
+
+      "Stav vozidla byl změněn:\n\n" +
+
+      vehicleNames[vehicleKey] +
+
+      "\n" +
+
+      info.icon + " " +
+
+      info.label;
+
+
+    if(newStatus === "limited"){
+
+      message +=
+
+        "\n\nDůvod: " +
+
+        reason;
+
+    }
+
+
+    alert(message);
+
+  }
+
+
+  // Pokud se pouze změnil důvod omezení
+  else if(newStatus === "limited"){
+
+    alert(
+
+      "Omezení vozidla bylo aktualizováno:\n\n" +
+
+      vehicleNames[vehicleKey] +
+
+      "\n" +
+
+      "🟡 " +
+
+      reason
+
+    );
+
+  }
+
+}
+
+
+// Bezpečné vložení textu
+function escapeHtml(text){
+
+  return String(text)
+
+    .replace(/&/g, "&amp;")
+
+    .replace(/</g, "&lt;")
+
+    .replace(/>/g, "&gt;")
+
+    .replace(/"/g, "&quot;")
+
+    .replace(/'/g, "&#039;");
+
+}
 // RENDER
 function render(data,isCAS){
 let html="";
