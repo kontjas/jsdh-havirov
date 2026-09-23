@@ -5,6 +5,34 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>JSDH Havířov</title>
 
+  /* ===== STAVY VOZIDEL ===== */
+
+.vehicle-status-card {
+  position: relative;
+  padding-right: 55px !important;
+}
+
+.vehicle-status-dot {
+  position: absolute;
+  right: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+}
+
+.status-ready {
+  background: #2e7d32;
+}
+
+.status-limited {
+  background: #f9a825;
+}
+
+.status-out {
+  background: #c62828;
+}
 <style>
 body { margin:0; font-family:Arial; background:#f2f2f2; }
 .header { text-align:center; padding:15px; font-weight:bold; background:#c62828; color:white; }
@@ -45,6 +73,57 @@ border-radius:8px;
 
 <div class="grid">
 <div class="card" onclick="showPage('vozidla')">🚒 Vozidla</div>
+<div id="vehicleStatusBox" style="
+  background:white;
+  margin:10px;
+  padding:15px;
+  border-radius:12px;
+">
+
+  <div style="font-weight:bold; margin-bottom:12px;">
+    Stav vozidla:
+    <span id="vehicleStatusText">Připraveno</span>
+  </div>
+
+  <button onclick="setVehicleStatus('ready')" style="
+    width:100%;
+    padding:12px;
+    margin-bottom:8px;
+    border:none;
+    border-radius:10px;
+    background:#2e7d32;
+    color:white;
+    font-weight:bold;
+  ">
+    🟢 Připraveno
+  </button>
+
+  <button onclick="setVehicleStatus('limited')" style="
+    width:100%;
+    padding:12px;
+    margin-bottom:8px;
+    border:none;
+    border-radius:10px;
+    background:#f9a825;
+    color:black;
+    font-weight:bold;
+  ">
+    🟡 Omezení
+  </button>
+
+  <button onclick="setVehicleStatus('out')" style="
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    background:#c62828;
+    color:white;
+    font-weight:bold;
+  ">
+    🔴 Mimo provoz
+  </button>
+
+</div>
 <div class="card" onclick="openSluzby()">📅 Služby</div>
 <div class="card" onclick="showPage('mapa')">🗺️ Mapové podklady</div>
 <div class="card" onclick="openMapaHZS()">📍 Mapa HZS</div>
@@ -58,9 +137,19 @@ border-radius:8px;
 <div id="vozidla" style="display:none;">
 <div class="back" onclick="goHome()">⬅ Zpět</div>
 
-<div class="card" onclick="openCAS()">CAS 20/4000/250 S2R - HKA 701</div>
-<div class="card" onclick="openDA()">DA 12 Renault - HKA 700</div>
-<div class="card">VEA Škoda Yeti - HKA 702</div>
+<div class="card vehicle-status-card" onclick="openCAS()">
+  CAS 20/4000/250 S2R - HKA 701
+  <span id="stav-HKA701" class="vehicle-status-dot status-ready"></span>
+</div>
+
+<div class="card vehicle-status-card" onclick="openDA()">
+  DA 12 Renault - HKA 700
+  <span id="stav-HKA700" class="vehicle-status-dot status-ready"></span>
+</div>
+
+<div class="card vehicle-status-card">
+  VEA Škoda Yeti - HKA 702
+  <span id="stav-HKA702" class="vehicle-status-dot status-ready"></span>
 </div>
 
 <!-- SLUŽBY -->
@@ -257,18 +346,118 @@ ${s.veci.map(v=>`<div class="item">${v}</div>`).join("")}
 
 content.innerHTML=html;
 }
+// ===== STAVY VOZIDEL =====
 
+let currentVehicleId = null;
+
+const vehicleStatusNames = {
+  ready: "Připraveno",
+  limited: "Omezení",
+  out: "Mimo provoz"
+};
+
+function getVehicleStatuses() {
+
+  const saved = localStorage.getItem("jsdh_vehicle_statuses");
+
+  if (!saved) {
+
+    const defaultStatuses = {
+      HKA701: "ready",
+      HKA700: "ready",
+      HKA702: "ready"
+    };
+
+    localStorage.setItem(
+      "jsdh_vehicle_statuses",
+      JSON.stringify(defaultStatuses)
+    );
+
+    return defaultStatuses;
+  }
+
+  return JSON.parse(saved);
+}
+
+
+function setVehicleStatus(status) {
+
+  if (!currentVehicleId) return;
+
+  const statuses = getVehicleStatuses();
+
+  statuses[currentVehicleId] = status;
+
+  localStorage.setItem(
+    "jsdh_vehicle_statuses",
+    JSON.stringify(statuses)
+  );
+
+  updateVehicleStatuses();
+
+  document.getElementById("vehicleStatusText").innerText =
+    vehicleStatusNames[status];
+}
+
+
+function updateVehicleStatuses() {
+
+  const statuses = getVehicleStatuses();
+
+  Object.keys(statuses).forEach(id => {
+
+    const status = statuses[id];
+
+    const dot = document.getElementById("stav-" + id);
+
+    if (dot) {
+
+      dot.classList.remove(
+        "status-ready",
+        "status-limited",
+        "status-out"
+      );
+
+      dot.classList.add(
+        "status-" + status
+      );
+    }
+
+  });
+}
 // OTEVŘENÍ VOZIDEL
 function openCAS(){
+
+currentVehicleId = "HKA701";
+
 showPage("detail");
+
 title.innerText="CAS 20/4000/250 S2R - HKA 701";
+
+const status = getVehicleStatuses()["HKA701"];
+
+document.getElementById("vehicleStatusText").innerText =
+  vehicleStatusNames[status];
+
 render(sekceCAS,true);
+
 }
 
 function openDA(){
+
+currentVehicleId = "HKA700";
+
 showPage("detail");
+
 title.innerText="DA 12 Renault - HKA 700";
+
+const status = getVehicleStatuses()["HKA700"];
+
+document.getElementById("vehicleStatusText").innerText =
+  vehicleStatusNames[status];
+
 render(sekceDA,false);
+
 }
 
 // TOGGLE
@@ -503,6 +692,8 @@ d.name.toLowerCase().includes(search)
 );
 
 renderHK(filtered);
+}
+updateVehicleStatuses();
 }
 </script>
 
